@@ -52,7 +52,7 @@ teardown() { rm -rf "$TMP"; }
   assert_file_not_exist "$TMP/archived.md"
 }
 
-@test "above threshold → evicts old done §T, keeps newest K (V197)" {
+@test "above threshold → evicts old done §T, keeps newest K (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
   assert_success
   # kept in SPEC: newest 2 done (T4,T5); evicted: T1,T2,T3
@@ -64,7 +64,7 @@ teardown() { rm -rf "$TMP"; }
   run grep -E '^\| T1 \| x ' "$TMP/archived.md"; assert_success
 }
 
-@test "NEVER evicts pending (.) or in-progress (~) §T (V197)" {
+@test "NEVER evicts pending (.) or in-progress (~) §T (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 0 "$SPEC"
   assert_success
   run grep -E '^\| T6 \| \. ' "$SPEC"; assert_success
@@ -73,7 +73,7 @@ teardown() { rm -rf "$TMP"; }
   run grep -E '^\| T6 ' "$TMP/archived.md"; assert_failure
 }
 
-@test "evicts old §B keeping newest K (V197)" {
+@test "evicts old §B keeping newest K (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 1 "$SPEC"
   assert_success
   run grep -E '^\| B3 ' "$SPEC"; assert_success          # newest kept
@@ -81,7 +81,7 @@ teardown() { rm -rf "$TMP"; }
   run grep -E '^\| B1 ' "$TMP/archived.md"; assert_success
 }
 
-@test "NEVER touches §V/§C/§I live lines (V197)" {
+@test "NEVER touches §V/§C/§I live lines (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 0 "$SPEC"
   assert_success
   run grep -E '^- V1: ' "$SPEC"; assert_success
@@ -100,7 +100,7 @@ teardown() { rm -rf "$TMP"; }
   assert_file_not_exist "$TMP/archived.md"
 }
 
-@test "IDs preserved — grep -r spans SPEC + archived (V197)" {
+@test "IDs preserved — grep -r spans SPEC + archived (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
   assert_success
   # every original id still resolvable across the two files
@@ -116,7 +116,7 @@ teardown() { rm -rf "$TMP"; }
   assert_output --partial "noop"
 }
 
-@test "dated archive block header written (V197)" {
+@test "dated archive block header written (V1)" {
   run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
   assert_success
   run grep -E '^## Archived [0-9]{4}-[0-9]{2}-[0-9]{2} \(ck:archive\)' "$TMP/archived.md"
