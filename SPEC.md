@@ -1,5 +1,7 @@
 # SPEC — cavekit-extensions
 
+<!-- formatVersion: 1 -->
+
 ## §G GOAL
 
 pr0d1r2's **cavekit format + tooling extensions** — spec compaction, supersession,
@@ -26,7 +28,9 @@ losing history.
   `ck-supersede` no-args (mode B, LLM skill) analyzes §V prose → proposes tiered `ck-supersede` commands with cited evidence (proposal-only, human/gate approves). See V2, V3.
 - I.archived-shard: when `archived.md` grows, shard to `archived/<YYYY-MM>.md` by completion month + a GENERATED `archived/INDEX.md` (id→shard, ranges). grep-by-id spans SPEC + all shards. See V5.
 - I.check-skip: `/check` SKIPS a `[superseded by V\d+]`-tagged §V (stop enforcing dead law) — OUT-OF-LOOP (edits the cavekit plugin's `/check`, ⊥ this repo; graduation). See V4.
-- I.format-version: `lib.formatVersion` (the on-disk schema constant) + a repo-declared `formatVersion` marker; the plugin/format axis split (C2). See V6.
+- I.format-version: `ck-format-version.sh <current|read|check|stamp> [SPEC.md]` — the on-disk schema constant
+  (`lib.formatVersion`) + a repo-declared `formatVersion` marker (`<!-- formatVersion: N -->`);
+  the plugin/format axis split (C2). See V6.
 
 ## §V INVARIANTS
 

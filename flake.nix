@@ -244,6 +244,10 @@
         ];
     in
     {
+      lib = {
+        formatVersion = 1;
+      };
+
       packages = forAllSystems (pkgs: {
         set = set-and-setting.lib.mkSet { inherit pkgs; };
         setting = (set-and-setting.lib.mkSetting { inherit pkgs; }).materialized;
