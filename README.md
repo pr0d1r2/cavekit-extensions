@@ -14,5 +14,8 @@ loop drives the pending §T.
   repo-declared formatVersion marker (T5/V6).
 - `ck-check-skip.sh` — mechanical superseded-§V filter: lists active/skipped
   §V ids so `/check` skips `[superseded by VN]`-tagged invariants (T6/V4).
+- `ck-assemble.sh` — deterministic assembly manifest: lists the portable
+  content `nix-cavekit` merges into the plugin derivation and reports the
+  `formatVersion` that rides the set-and-setting lock-bump (T7/V6/C1).
 - `.claude/skills/ck-supersede-propose.md` — LLM proposer skill for
   §V supersession analysis (T4/V3).
