@@ -70,3 +70,4 @@ losing history.
 | B2 | 2026-07-12 | CI: SPEC.md lines in §I/§V exceed 300-char markdownlint limit → lefthook pre-push fails | Wrap long lines with 2-space continuation indent |
 | B3 | 2026-07-12 | CI: `install-nix-action@v27` on macOS: `dscl eDSRecordAlreadyExists` — runner has pre-existing Nix build users | Pre-step in `build-darwin` deletes `_nixbld*` users and groups before install |
 | B4 | 2026-07-12 | CI: `install-nix-action@v27` installs Nix 2.22.1 with `--darwin-use-unencrypted-nix-store-volume`, incompatible with macOS 26 runners (`macos-latest` migrated 2026-06-15) | Upgrade `install-nix-action` v27→v31 (Nix 2.34.8, drops obsolete macOS volume flag) |
+| B5 | 2026-07-12 | CI: `flake.lock` never committed; `dep-graph` check fails (`flake.lock not found` in Nix store source copy) → `nix flake check` exit status 4 | Commit `flake.lock` so it is git-tracked and included in the Nix store source |
