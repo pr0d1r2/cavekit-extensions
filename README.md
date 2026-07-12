@@ -12,5 +12,7 @@ loop drives the pending §T.
 - `ck-supersede.sh` — mechanical supersession tagging (pending, §T1).
 - `ck-format-version.sh` — format-version primitive: reads/checks/stamps the
   repo-declared formatVersion marker (T5/V6).
+- `ck-check-skip.sh` — mechanical superseded-§V filter: lists active/skipped
+  §V ids so `/check` skips `[superseded by VN]`-tagged invariants (T6/V4).
 - `.claude/skills/ck-supersede-propose.md` — LLM proposer skill for
   §V supersession analysis (T4/V3).
