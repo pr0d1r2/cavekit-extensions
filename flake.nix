@@ -202,11 +202,28 @@
               pkgs.coreutils
             ];
           })
-          (w "lefthook-markdownlint" nix-lefthook-markdownlint-src {
+          (
+            let
+              is-markdown-agentic = pkgs.writeShellApplication {
+                name = "is-markdown-agentic";
+                text = builtins.readFile "${nix-lefthook-markdownlint-src}/is-markdown-agentic.sh";
+              };
+            in
+            w "lefthook-markdownlint" nix-lefthook-markdownlint-src {
+              runtimeInputs = [
+                pkgs.markdownlint-cli
+                is-markdown-agentic
+              ];
+            }
+          )
+          (pkgs.writeShellApplication {
+            name = "lefthook-markdownlint-agentic";
             runtimeInputs = [ pkgs.markdownlint-cli ];
-          })
-          (w "lefthook-markdownlint-agentic" nix-lefthook-markdownlint-agentic-src {
-            runtimeInputs = [ pkgs.markdownlint-cli ];
+            text =
+              builtins.replaceStrings
+                [ "@MARKDOWNLINT_AGENTIC_CONFIG@" ]
+                [ "${nix-lefthook-markdownlint-agentic-src}/.markdownlint-agentic.yml" ]
+                (builtins.readFile "${nix-lefthook-markdownlint-agentic-src}/lefthook-markdownlint-agentic.sh");
           })
           (w "lefthook-missing-final-newline" nix-lefthook-missing-final-newline-src { })
           (w "lefthook-nix-flake-check" nix-lefthook-nix-flake-check-src {
