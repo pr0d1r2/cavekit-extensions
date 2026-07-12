@@ -58,7 +58,7 @@ losing history.
 | T2 | x | **`ck-archive` tagged-§V eviction** — extend `ck-archive.sh` to also evict `[superseded by V\d+]`-tagged §V lines (past v1's §T/§B), IDs preserved. + bats. | V1,V4,I.ck-archive |
 | T3 | x | **`archived/` time-sharding + generated INDEX** — when `archived.md` exceeds a size, shard to `archived/<YYYY-MM>.md` + a generated `INDEX.md` (id→shard); grep-by-id spans all. + bats. | V5,I.archived-shard |
 | T4 | x | **`ck-supersede` mode B (LLM proposer skill)** — a skill: analyze §V prose → tiered, evidence-cited `ck-supersede` command proposals (HIGH/MED/LOW); proposal-only. | V3,I.ck-supersede |
-| T5 | . | **format-version primitive** — `lib.formatVersion` + a repo-declared `formatVersion` marker; the plugin/format axis split. | V6,I.format-version |
+| T5 | x | **format-version primitive** — `lib.formatVersion` + a repo-declared `formatVersion` marker; the plugin/format axis split. | V6,I.format-version |
 | T6 | . | (OUT-OF-LOOP — graduation/upstream PR, edits the cavekit plugin) **`/check` skip-superseded** — `/check` stops enforcing a `[superseded by VN]`-tagged §V. | V4,I.check-skip |
 | T7 | . | (OUT-OF-LOOP — cross-repo) **nix-cavekit assembly** — `nix-cavekit` pins this repo + merges its content into the plugin derivation; propagate via set-and-setting lock-bump. | V6,C1 |
 
@@ -70,3 +70,5 @@ losing history.
 | B2 | 2026-07-12 | CI: SPEC.md lines in §I/§V exceed 300-char markdownlint limit → lefthook pre-push fails | Wrap long lines with 2-space continuation indent |
 | B3 | 2026-07-12 | CI: `install-nix-action@v27` on macOS: `dscl eDSRecordAlreadyExists` — runner has pre-existing Nix build users | Pre-step in `build-darwin` deletes `_nixbld*` users and groups before install |
 | B4 | 2026-07-12 | CI: `install-nix-action@v27` installs Nix 2.22.1 with `--darwin-use-unencrypted-nix-store-volume`, incompatible with macOS 26 runners (`macos-latest` migrated 2026-06-15) | Upgrade `install-nix-action` v27→v31 (Nix 2.34.8, drops obsolete macOS volume flag) |
+| B5 | 2026-07-12 | CI: `flake.lock` never committed; `dep-graph` check fails (`flake.lock not found` in Nix store source copy) → `nix flake check` exit status 4 | Commit `flake.lock` so it is git-tracked and included in the Nix store source |
+| B6 | 2026-07-12 | CI: `lefthook-markdownlint-agentic` wrapper uses generic `wrap` helper which does not substitute `@MARKDOWNLINT_AGENTIC_CONFIG@` placeholder; `lefthook-markdownlint` wrapper missing `is-markdown-agentic` runtime dependency → lefthook exit status 4 | Use `builtins.replaceStrings` to substitute config path for agentic wrapper; add `is-markdown-agentic` built from upstream source to markdownlint `runtimeInputs` |
