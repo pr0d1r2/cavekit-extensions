@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# ck-archive.sh — DETERMINISTIC, lossless SPEC.md compaction (V197 / I.ck-archive).
-# Evicts the coldest done §T (`x`) + §B rows to archived.md, keeping the newest
-# K of each in SPEC; threshold-gated; a pure text transform (no LLM ⇒ hookable).
-# Rows MOVE (never dropped) — grep-by-id spans SPEC.md + archived.md.
+# ck-archive.sh — DETERMINISTIC, lossless SPEC.md compaction (V1/V4 / I.ck-archive).
+# Evicts the coldest done §T (`x`) + §B rows + [superseded]-tagged §V to
+# archived.md, keeping the newest K of §T/§B; threshold-gated; a pure text
+# transform (no LLM ⇒ hookable). Rows MOVE — grep-by-id spans both files.
 #
 #   ck-archive.sh [--dry-run] [--threshold N] [--keep-recent K] [SPEC.md]
 #
-# Noop when the file is ≤ threshold lines. Never touches pending/in-progress §T
-# (`.`/`~`) or §G/§C/§I/§V/§R. See SPEC V197, I.ck-archive.
+# Noop when ≤ threshold lines. Never touches pending/in-progress §T (`.`/`~`),
+# live §V, or §G/§C/§I/§R.
 set -euo pipefail
 
 THRESHOLD=500
@@ -81,16 +81,18 @@ awk -v kt="$keep_t" -v kb="$keep_b" -v evf="$tmp_evict" '
       if (index(kt, "," id ",") == 0) { print >> evf; next }
     } else if ($0 ~ /^\| B[0-9]+ \|/) {
       if (index(kb, "," id ",") == 0) { print >> evf; next }
+    } else if ($0 ~ /^- V[0-9]+: .*\[superseded by V[0-9]+\]/) {
+      print >> evf; next
     }
     print
   }
 ' "$SPEC" >"$tmp_spec"
 
-evicted="$(grep -cE '^\| [TB][0-9]+ ' "$tmp_evict" || true)"
+evicted="$(grep -cE '^\| [TB][0-9]+ |^- V[0-9]+: ' "$tmp_evict" || true)"
 projected="$(wc -l <"$tmp_spec" | tr -d ' ')"
 
 if [ "$evicted" -eq 0 ]; then
-    echo "ck-archive: nothing cold to evict (≤ $KEEP done §T + §B) — noop"
+    echo "ck-archive: nothing to evict — noop"
     exit 0
 fi
 
