@@ -52,3 +52,4 @@ losing history.
 
 | id | date | cause | fix |
 | --- | --- | --- | --- |
+| B1 | 2026-07-12 | CI: nix-lefthook-ci-action install step uses `--ignore-environment` without `--keep HOME`; git fatally errors | Override devShells to prepend `export HOME="${HOME:-/tmp}"` before mkDevShells base hook |

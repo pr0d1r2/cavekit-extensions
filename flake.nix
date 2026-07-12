@@ -253,24 +253,36 @@
         pkgs:
         let
           sys = pkgs.stdenv.hostPlatform.system;
+          shells = set-and-setting.lib.mkDevShells {
+            inherit pkgs;
+            basePackages = (lefthookWrappersFor pkgs) ++ [
+              pkgs.coreutils
+              pkgs.git
+              pkgs.nix
+              pkgs.gh
+              nix-lefthook.packages.${sys}.default
+            ];
+            defaultShellHook = ''
+              ${self.packages.${sys}.setting}/bin/sync-setting .
+            '';
+            agenticShellHook = ''
+              ${self.packages.${sys}.setting}/bin/sync-setting .
+              ${self.packages.${sys}.set}/bin/sync-set .
+            '';
+          };
+          # nix-lefthook-ci-action's install step uses
+          # nix develop --ignore-environment without --keep HOME;
+          # git fatally errors when HOME is unset. Guard every shell.
+          guardHome =
+            shell:
+            shell.overrideAttrs (prev: {
+              shellHook = ''
+                export HOME="''${HOME:-/tmp}"
+              ''
+              + prev.shellHook;
+            });
         in
-        set-and-setting.lib.mkDevShells {
-          inherit pkgs;
-          basePackages = (lefthookWrappersFor pkgs) ++ [
-            pkgs.coreutils
-            pkgs.git
-            pkgs.nix
-            pkgs.gh
-            nix-lefthook.packages.${sys}.default
-          ];
-          defaultShellHook = ''
-            ${self.packages.${sys}.setting}/bin/sync-setting .
-          '';
-          agenticShellHook = ''
-            ${self.packages.${sys}.setting}/bin/sync-setting .
-            ${self.packages.${sys}.set}/bin/sync-set .
-          '';
-        }
+        builtins.mapAttrs (_: guardHome) shells
       );
 
       # #93: fragment-driven checks -- declare fragments once, get all relevant
