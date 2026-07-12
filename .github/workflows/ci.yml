@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v31
       - name: Sync materialized configs
         run: |
           setting_pkg="$(nix build .#setting --print-out-paths --no-link)"
@@ -34,6 +34,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"
@@ -44,7 +45,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - name: Remove pre-existing Nix build users (macOS runner workaround)
+        run: |
+          for i in $(seq 1 32); do
+            sudo dscl . -delete "/Users/_nixbld$i" 2>/dev/null || true
+          done
+          sudo dscl . -delete /Groups/_nixbld 2>/dev/null || true
+          sudo dscl . -delete /Groups/nixbld 2>/dev/null || true
+      - uses: cachix/install-nix-action@v31
       - name: Sync materialized configs
         run: |
           setting_pkg="$(nix build .#setting --print-out-paths --no-link)"
@@ -55,6 +63,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"
@@ -65,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v31
       - name: Sync materialized configs
         run: |
           setting_pkg="$(nix build .#setting --print-out-paths --no-link)"
@@ -77,6 +86,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"
