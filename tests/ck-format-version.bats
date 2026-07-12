@@ -119,6 +119,21 @@ EOF
   assert_output --partial "99"
 }
 
+@test "check with lower repo version → ok + migrate hint (C2)" {
+  cat >"$SPEC" <<'EOF'
+# SPEC
+
+<!-- formatVersion: 0 -->
+
+## §V INVARIANTS
+- V1: something
+EOF
+  run bash "$SCRIPT" check "$SPEC"
+  assert_success
+  assert_output --partial "ok"
+  assert_output --partial "migrate available"
+}
+
 @test "check with no marker → error" {
   cat >"$SPEC" <<'EOF'
 # SPEC
