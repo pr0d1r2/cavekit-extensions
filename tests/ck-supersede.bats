@@ -132,6 +132,17 @@ teardown() { rm -rf "$TMP"; }
   assert_output --partial "[supersedes V1, V2]"
 }
 
+@test "--link after prior non-link run persists annotation" {
+  bash "$SCRIPT" V3 V1 "$SPEC"
+  run bash "$SCRIPT" --link V3 V1 "$SPEC"
+  assert_success
+  refute_output --partial "noop"
+  assert_output --partial "linked"
+  run grep '^- V3: ' "$SPEC"
+  assert_success
+  assert_output --partial "[supersedes V1]"
+}
+
 @test "--link idempotent — does not duplicate annotation" {
   bash "$SCRIPT" --link V3 V1 "$SPEC"
   before="$(cat "$SPEC")"
