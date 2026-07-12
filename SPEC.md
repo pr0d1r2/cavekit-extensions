@@ -20,8 +20,10 @@ losing history.
 
 ## §I INTERFACES
 
-- I.ck-archive: `ck-archive.sh [--dry-run] [--threshold N=500] [--keep-recent K=20] [SPEC.md]` — DETERMINISTIC, lossless spec compaction (V1). Evicts the coldest done §T (`x`) + §B rows to `archived.md` (dated block, raw pipe rows), keeping the newest K; threshold-gated; never touches live rows (pending/in-progress §T, §G/§C/§I/§V). IDs global-monotonic across SPEC + archived. `--dry-run` previews. SHIPPED (seeded from hallucinogen).
-- I.ck-supersede: `ck-supersede.sh <winner> <loser>…` (mode A, mechanical) tags each loser `[superseded by <winner>]` (validate ids exist, idempotent, intra-kind, refuse self); `ck-supersede` no-args (mode B, LLM skill) analyzes §V prose → proposes tiered `ck-supersede` commands with cited evidence (proposal-only, human/gate approves). See V2, V3.
+- I.ck-archive: `ck-archive.sh [--dry-run] [--threshold N=500] [--keep-recent K=20] [SPEC.md]` — DETERMINISTIC, lossless spec compaction (V1). Evicts the coldest done §T (`x`) + §B rows to `archived.md` (dated block, raw pipe rows),
+  keeping the newest K; threshold-gated; never touches live rows (pending/in-progress §T, §G/§C/§I/§V). IDs global-monotonic across SPEC + archived. `--dry-run` previews. SHIPPED (seeded from hallucinogen).
+- I.ck-supersede: `ck-supersede.sh <winner> <loser>…` (mode A, mechanical) tags each loser `[superseded by <winner>]` (validate ids exist, idempotent, intra-kind, refuse self);
+  `ck-supersede` no-args (mode B, LLM skill) analyzes §V prose → proposes tiered `ck-supersede` commands with cited evidence (proposal-only, human/gate approves). See V2, V3.
 - I.archived-shard: when `archived.md` grows, shard to `archived/<YYYY-MM>.md` by completion month + a GENERATED `archived/INDEX.md` (id→shard, ranges). grep-by-id spans SPEC + all shards. See V5.
 - I.check-skip: `/check` SKIPS a `[superseded by V\d+]`-tagged §V (stop enforcing dead law) — OUT-OF-LOOP (edits the cavekit plugin's `/check`, ⊥ this repo; graduation). See V4.
 - I.format-version: `lib.formatVersion` (the on-disk schema constant) + a repo-declared `formatVersion` marker; the plugin/format axis split (C2). See V6.
@@ -29,11 +31,19 @@ losing history.
 ## §V INVARIANTS
 
 - V1: `ck-archive` — DETERMINISTIC, lossless, threshold-gated compaction: evict cold done-§T(`x`)/§B rows to `archived.md` (keep newest K), never live rows, IDs preserved global-monotonic across SPEC+archived, `--dry-run` mutates nothing. A pure text transform (no LLM ⇒ hookable/CI-able).
-- V2: `ck-supersede` mode A is MECHANICAL — tags loser §V `[superseded by <winner>]` (winner id first, rest lose); validates both ids exist, idempotent (already-tagged = noop), intra-kind (V supersedes V), refuses self/unknown. Tags but does NOT evict — reversible, visible, caught before eviction (V1 does that separately).
-- V3: `ck-supersede` mode B is an LLM PROPOSER — analyzes §V prose for supersession (explicit "supersedes VN" / "redefined" / subject-gone), emits tiered proposals (HIGH explicit → `--apply`-eligible · MED redefine → confirm · LOW inferred → confirm+quote-reasoning), each CITING evidence; NEVER mutates — outputs mode-A commands a human/gate runs. Mirrors the V104/V105 explicit-vs-inferred trust tiers.
-- V4: **supersession pipeline** — judgment at WRITE-time, mechanical archival: `/spec` tags `[superseded by VN]` when it writes a superseding §V → `ck-archive` evicts `[superseded]`-tagged §V (extends V1 past §T/§B) → `/check` SKIPS tagged §V. The tag is an unambiguous delimiter ⇒ archival stays 100% mechanical; a retrospective LLM sweep is ⊥ needed (mode B backfills legacy untagged claims once).
-- V5: `archived` is a COMPACTION SINK, ⊥ a task-lifecycle move (C4) — written only when `ck-archive` runs (size-triggered). Start FLAT (`archived.md`); shard to `archived/<YYYY-MM>.md` + a GENERATED INDEX only when the flat file hurts (⊥ premature). Time-partition serves the journal/audit read; id-lookup stays cheap (narrow grep spans SPEC + shards).
-- V6: format-version is DECOUPLED from plugin/tooling version (C2) — a repo declares `formatVersion`; migrators (`apps.migrate`, deterministic, idempotent, confirmator-gated) bridge vN→vN+1; the plugin reads ≥ v1 (offers migrate), writes current. Propagation rides `nix-cavekit → set-and-setting → leaves` (a lock-bump, ⊥ O(N) copies).
+- V2: `ck-supersede` mode A is MECHANICAL — tags loser §V `[superseded by <winner>]` (winner id first, rest lose); validates both ids exist, idempotent (already-tagged = noop),
+  intra-kind (V supersedes V), refuses self/unknown. Tags but does NOT evict — reversible, visible, caught before eviction (V1 does that separately).
+- V3: `ck-supersede` mode B is an LLM PROPOSER — analyzes §V prose for supersession (explicit "supersedes VN" / "redefined" / subject-gone), emits tiered proposals
+  (HIGH explicit → `--apply`-eligible · MED redefine → confirm · LOW inferred → confirm+quote-reasoning), each CITING evidence;
+  NEVER mutates — outputs mode-A commands a human/gate runs. Mirrors the V104/V105 explicit-vs-inferred trust tiers.
+- V4: **supersession pipeline** — judgment at WRITE-time, mechanical archival: `/spec` tags `[superseded by VN]` when it writes a superseding §V →
+  `ck-archive` evicts `[superseded]`-tagged §V (extends V1 past §T/§B) → `/check` SKIPS tagged §V. The tag is an unambiguous delimiter ⇒
+  archival stays 100% mechanical; a retrospective LLM sweep is ⊥ needed (mode B backfills legacy untagged claims once).
+- V5: `archived` is a COMPACTION SINK, ⊥ a task-lifecycle move (C4) — written only when `ck-archive` runs (size-triggered). Start FLAT (`archived.md`);
+  shard to `archived/<YYYY-MM>.md` + a GENERATED INDEX only when the flat file hurts (⊥ premature). Time-partition serves the journal/audit read;
+  id-lookup stays cheap (narrow grep spans SPEC + shards).
+- V6: format-version is DECOUPLED from plugin/tooling version (C2) — a repo declares `formatVersion`; migrators (`apps.migrate`, deterministic, idempotent, confirmator-gated)
+  bridge vN→vN+1; the plugin reads ≥ v1 (offers migrate), writes current. Propagation rides `nix-cavekit → set-and-setting → leaves` (a lock-bump, ⊥ O(N) copies).
 - V7: the nix↔LLM seam (C3) — nix owns package/version/**migrate**/validate (pure, reproducible); LLM owns AUTHORING (`/spec`, mode-B propose). Mechanical verbs (`ck-archive`, `ck-supersede` mode A) are deterministic scripts; proposers/authors are skills. A change to one ⊥ leaks into the other.
 
 ## §T TASKS
@@ -53,3 +63,4 @@ losing history.
 | id | date | cause | fix |
 | --- | --- | --- | --- |
 | B1 | 2026-07-12 | CI: nix-lefthook-ci-action install step uses `--ignore-environment` without `--keep HOME`; git fatally errors | Override devShells to prepend `export HOME="${HOME:-/tmp}"` before mkDevShells base hook |
+| B2 | 2026-07-12 | CI: SPEC.md lines in §I/§V exceed 300-char markdownlint limit → lefthook pre-push fails | Wrap long lines with 2-space continuation indent |
