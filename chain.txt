@@ -1,0 +1,8 @@
+# cavekit-extensions issue chain — title | body | deps
+# deps: prior-issue ORDINAL (intra-chain) | owner/repo#N | owner/repo (snapshot-expand)
+# The --depends-on set-and-setting root is prepended to the FIRST issue at seed time.
+ck-supersede mode A (mechanical tag) | Implement ck-supersede.sh: <winner> <loser>... tags losers [superseded by <winner>]; validate ids, idempotent, intra-kind, refuse self. + bats. See SPEC V2/T1. |
+ck-archive tagged-§V eviction | Extend ck-archive.sh to also evict [superseded by V<n>]-tagged §V lines (past v1's §T/§B), IDs preserved. + bats. See SPEC V1/V4/T2. | 1
+archived/ time-sharding + INDEX | When archived.md grows, shard to archived/<YYYY-MM>.md + a generated INDEX.md (id->shard). grep-by-id spans all. + bats. See SPEC V5/T3. | 2
+ck-supersede mode B (LLM proposer skill) | A skill: analyze §V prose -> tiered, evidence-cited ck-supersede command proposals (HIGH/MED/LOW), proposal-only. See SPEC V3/T4. | 1
+format-version primitive | lib.formatVersion + a repo-declared formatVersion marker; the plugin/format axis split. See SPEC V6/T5. |
