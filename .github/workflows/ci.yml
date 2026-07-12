@@ -34,6 +34,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"
@@ -55,6 +56,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"
@@ -77,6 +79,7 @@ jobs:
           skip-build: "true"
           cachix-cache: ""
           extra-env: >-
+            HOME=${{ env.HOME }}
             GIT_OPTIONAL_LOCKS=0
           keep-home: "true"
           flake-check-timeout: "600"

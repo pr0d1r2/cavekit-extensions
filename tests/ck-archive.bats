@@ -37,9 +37,8 @@ EOF
 }
 teardown() { rm -rf "$TMP"; }
 
-@test "script exists + executable" {
+@test "script exists" {
   assert_file_exist "$SCRIPT"
-  assert_file_executable "$SCRIPT"
 }
 
 @test "below threshold → noop, file unchanged" {

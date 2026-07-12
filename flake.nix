@@ -275,7 +275,8 @@
 
       # #93: fragment-driven checks -- declare fragments once, get all relevant
       # pinned checks. Fragments match those used in materializationFor.
-      checks = forAllSystems (pkgs:
+      checks = forAllSystems (
+        pkgs:
         (set-and-setting.lib.checksFor {
           inherit pkgs;
           src = ./.;
