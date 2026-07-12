@@ -64,3 +64,4 @@ losing history.
 | --- | --- | --- | --- |
 | B1 | 2026-07-12 | CI: nix-lefthook-ci-action install step uses `--ignore-environment` without `--keep HOME`; git fatally errors | Override devShells to prepend `export HOME="${HOME:-/tmp}"` before mkDevShells base hook |
 | B2 | 2026-07-12 | CI: SPEC.md lines in §I/§V exceed 300-char markdownlint limit → lefthook pre-push fails | Wrap long lines with 2-space continuation indent |
+| B3 | 2026-07-12 | CI: `install-nix-action@v27` on macOS: `dscl eDSRecordAlreadyExists` — runner has pre-existing Nix build users | Pre-step in `build-darwin` deletes `_nixbld*` users and groups before install |

@@ -45,6 +45,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Remove pre-existing Nix build users (macOS runner workaround)
+        run: |
+          for i in $(seq 1 32); do
+            sudo dscl . -delete "/Users/_nixbld$i" 2>/dev/null || true
+          done
+          sudo dscl . -delete /Groups/_nixbld 2>/dev/null || true
+          sudo dscl . -delete /Groups/nixbld 2>/dev/null || true
       - uses: cachix/install-nix-action@v27
       - name: Sync materialized configs
         run: |
