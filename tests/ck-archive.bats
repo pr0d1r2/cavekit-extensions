@@ -1,9 +1,10 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC1091,SC2030,SC2031
 # Coverage for scripts/ck-archive.sh — DETERMINISTIC lossless SPEC compaction
-# (V197/I.ck-archive). A synthetic fixture with a low threshold drives eviction:
-# done §T (`x`) + §B evict oldest-first keeping newest K; pending/in-progress §T
-# and §V/§C/§I are NEVER touched; rows MOVE to archived.md (grep-by-id spans both).
+# (V1/V4/I.ck-archive). A synthetic fixture with a low threshold drives eviction:
+# done §T (`x`) + §B evict oldest-first keeping newest K; [superseded]-tagged §V
+# always evict; pending/in-progress §T and live §V/§C/§I are NEVER touched;
+# rows MOVE to archived.md (grep-by-id spans both).
 
 setup() {
   load "${BATS_LIB_PATH}/bats-support/load.bash"
@@ -14,13 +15,14 @@ setup() {
   TMP="$(mktemp -d)"
   SPEC="$TMP/SPEC.md"
   # 5 done §T (T1..T5), 1 pending (T6 `.`), 1 in-progress (T7 `~`), 3 §B, plus
-  # live §V/§C lines. 16 content lines ⇒ threshold 4 triggers.
+  # live §V/§C + 1 superseded §V. 17 content lines ⇒ threshold 4 triggers.
   cat >"$SPEC" <<'EOF'
 # SPEC
 ## §C CONSTRAINTS
 - C1: never break the sandbox
 ## §V INVARIANTS
 - V1: the one true invariant
+- V2: old invariant [superseded by V1]
 ## §T TASKS
 | T1 | x | oldest done | C1 |
 | T2 | x | done two | C1 |
@@ -119,4 +121,78 @@ teardown() { rm -rf "$TMP"; }
   assert_success
   run grep -E '^## Archived [0-9]{4}-[0-9]{2}-[0-9]{2} \(ck:archive\)' "$TMP/archived.md"
   assert_success
+}
+
+@test "evicts [superseded]-tagged §V lines (V4)" {
+  run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
+  assert_success
+  run grep -E '^- V2: ' "$SPEC"; assert_failure
+  run grep -E '^- V2: .*\[superseded by V1\]' "$TMP/archived.md"; assert_success
+}
+
+@test "NEVER evicts live (non-superseded) §V lines (V4)" {
+  run bash "$SCRIPT" --threshold 4 --keep-recent 0 "$SPEC"
+  assert_success
+  run grep -E '^- V1: ' "$SPEC"; assert_success
+  run grep -E '^- V1: ' "$TMP/archived.md"; assert_failure
+}
+
+@test "superseded §V IDs preserved — grep spans SPEC + archived (V4)" {
+  run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
+  assert_success
+  run grep -rhE '^- V2: ' "$SPEC" "$TMP/archived.md"; assert_success
+  run grep -rhE '^- V1: ' "$SPEC" "$TMP/archived.md"; assert_success
+}
+
+@test "--dry-run with superseded §V counts but mutates nothing (V4)" {
+  before="$(cat "$SPEC")"
+  run bash "$SCRIPT" --dry-run --threshold 4 --keep-recent 2 "$SPEC"
+  assert_success
+  assert_output --partial "DRY-RUN"
+  assert_equal "$(cat "$SPEC")" "$before"
+  assert_file_not_exist "$TMP/archived.md"
+}
+
+@test "multiple superseded §V lines all evict (V4)" {
+  cat >"$SPEC" <<'EOF'
+# SPEC
+## §V INVARIANTS
+- V1: current law
+- V2: old thing [superseded by V1]
+- V3: also old [superseded by V1]
+- V4: yet another old [superseded by V1]
+## §T TASKS
+| T1 | x | done | V1 |
+| T2 | x | done | V1 |
+| T3 | . | pending | V1 |
+EOF
+  run bash "$SCRIPT" --threshold 4 --keep-recent 2 "$SPEC"
+  assert_success
+  run grep -E '^- V1: ' "$SPEC"; assert_success
+  run grep -E '^- V2: ' "$SPEC"; assert_failure
+  run grep -E '^- V3: ' "$SPEC"; assert_failure
+  run grep -E '^- V4: ' "$SPEC"; assert_failure
+  run grep -cE '^- V[0-9]+: ' "$TMP/archived.md"
+  assert_output "3"
+}
+
+@test "§V without [superseded] tag is never evicted even with keep-recent 0 (V4)" {
+  cat >"$SPEC" <<'EOF'
+# SPEC
+## §V INVARIANTS
+- V1: live one
+- V2: live two
+- V3: live three
+## §T TASKS
+| T1 | x | done | V1 |
+| T2 | x | done | V1 |
+| T3 | x | done | V1 |
+| T4 | x | done | V1 |
+| T5 | x | done | V1 |
+EOF
+  run bash "$SCRIPT" --threshold 4 --keep-recent 0 "$SPEC"
+  assert_success
+  run grep -E '^- V1: ' "$SPEC"; assert_success
+  run grep -E '^- V2: ' "$SPEC"; assert_success
+  run grep -E '^- V3: ' "$SPEC"; assert_success
 }
