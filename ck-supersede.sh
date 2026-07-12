@@ -127,6 +127,7 @@ for loser in "${LOSERS[@]}"; do
     tagged=$((tagged + 1))
 done
 
+linked=0
 if [ "$LINK" = 1 ]; then
     loser_csv=""
     for loser in "${LOSERS[@]}"; do
@@ -138,13 +139,19 @@ if [ "$LINK" = 1 ]; then
     done
     if ! grep -qE "^- ${WINNER}: .*\[supersedes " "$tmp"; then
         sed -i "s|^\\(- ${WINNER}: .*\\)$|\\1 [supersedes ${loser_csv}]|" "$tmp"
+        linked=1
     fi
 fi
 
-if [ "$tagged" -eq 0 ]; then
+if [ "$tagged" -eq 0 ] && [ "$linked" -eq 0 ]; then
     echo "ck-supersede: already tagged — noop"
     exit 0
 fi
 
 mv "$tmp" "$SPEC"
-echo "ck-supersede: tagged $tagged loser(s) [superseded by $WINNER]"
+if [ "$tagged" -gt 0 ]; then
+    echo "ck-supersede: tagged $tagged loser(s) [superseded by $WINNER]"
+fi
+if [ "$linked" -eq 1 ]; then
+    echo "ck-supersede: linked $WINNER [supersedes $loser_csv]"
+fi

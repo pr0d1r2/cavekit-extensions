@@ -54,7 +54,7 @@ losing history.
 
 | id | st | task | cites |
 | --- | --- | --- | --- |
-| T1 | . | **`ck-supersede.sh` mode A (mechanical tag)** — `<winner> <loser>…` → tag losers `[superseded by <winner>]`; validate ids, idempotent, intra-kind, refuse self/unknown; `--link` annotates the winner. + bats. | V2,I.ck-supersede |
+| T1 | x | **`ck-supersede.sh` mode A (mechanical tag)** — `<winner> <loser>…` → tag losers `[superseded by <winner>]`; validate ids, idempotent, intra-kind, refuse self/unknown; `--link` annotates the winner. + bats. | V2,I.ck-supersede |
 | T2 | . | **`ck-archive` tagged-§V eviction** — extend `ck-archive.sh` to also evict `[superseded by V\d+]`-tagged §V lines (past v1's §T/§B), IDs preserved. + bats. | V1,V4,I.ck-archive |
 | T3 | . | **`archived/` time-sharding + generated INDEX** — when `archived.md` exceeds a size, shard to `archived/<YYYY-MM>.md` + a generated `INDEX.md` (id→shard); grep-by-id spans all. + bats. | V5,I.archived-shard |
 | T4 | . | **`ck-supersede` mode B (LLM proposer skill)** — a skill: analyze §V prose → tiered, evidence-cited `ck-supersede` command proposals (HIGH/MED/LOW); proposal-only. | V3,I.ck-supersede |
