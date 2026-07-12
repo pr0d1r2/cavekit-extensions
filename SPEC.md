@@ -31,6 +31,11 @@ losing history.
 - I.format-version: `ck-format-version.sh <current|read|check|stamp> [SPEC.md]` — the on-disk schema constant
   (`lib.formatVersion`) + a repo-declared `formatVersion` marker (`<!-- formatVersion: N -->`);
   the plugin/format axis split (C2). See V6.
+- I.ck-assemble: `ck-assemble.sh <list|manifest|version|check> [REPO_ROOT]` — DETERMINISTIC assembly manifest for `nix-cavekit` (T7).
+  `list`/`manifest` enumerate the portable content this repo contributes to the plugin derivation (the `ck-*.sh` verbs + proposer
+  skills, DERIVED from the tree so a new script/skill needs no edit here); `version`/`manifest` report the repo-declared `formatVersion`
+  that rides the `nix-cavekit → set-and-setting → leaves` lock-bump propagation; `check` verifies the tree is assemblable (marker +
+  every path present, non-empty). `nix-cavekit` PINS + MERGES + versions (C1); this repo only DECLARES what merges. See V6, C1.
 
 ## §V INVARIANTS
 
@@ -60,7 +65,7 @@ losing history.
 | T4 | x | **`ck-supersede` mode B (LLM proposer skill)** — a skill: analyze §V prose → tiered, evidence-cited `ck-supersede` command proposals (HIGH/MED/LOW); proposal-only. | V3,I.ck-supersede |
 | T5 | x | **format-version primitive** — `lib.formatVersion` + a repo-declared `formatVersion` marker; the plugin/format axis split. | V6,I.format-version |
 | T6 | x | (OUT-OF-LOOP — graduation/upstream PR, edits the cavekit plugin) **`/check` skip-superseded** — `/check` stops enforcing a `[superseded by VN]`-tagged §V. | V4,I.check-skip |
-| T7 | . | (OUT-OF-LOOP — cross-repo) **nix-cavekit assembly** — `nix-cavekit` pins this repo + merges its content into the plugin derivation; propagate via set-and-setting lock-bump. | V6,C1 |
+| T7 | x | (OUT-OF-LOOP — cross-repo) **nix-cavekit assembly** — `nix-cavekit` pins this repo + merges its content into the plugin derivation; propagate via set-and-setting lock-bump. | V6,C1 |
 
 ## §B BUGS
 
