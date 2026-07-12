@@ -64,7 +64,6 @@ fi
 # Extract kind prefix + numeric part; validate format.
 w_kind="${WINNER%%[0-9]*}"
 w_num="${WINNER#"$w_kind"}"
-case "$w_kind" in '') ;; *) ;; esac
 case "$w_num" in
     '' | *[!0-9]*)
         echo "ck-supersede: invalid id: $WINNER" >&2
@@ -119,6 +118,10 @@ for loser in "${LOSERS[@]}"; do
     if grep -qE "^- ${loser}: .*\[superseded by ${WINNER}\]" "$tmp"; then
         skipped=$((skipped + 1))
         continue
+    fi
+    if grep -qE "^- ${loser}: .*\[superseded by " "$tmp"; then
+        echo "ck-supersede: $loser already superseded (not by $WINNER)" >&2
+        exit 2
     fi
     sed -i "s|^\\(- ${loser}: .*\\)$|\\1 [superseded by ${WINNER}]|" "$tmp"
     tagged=$((tagged + 1))

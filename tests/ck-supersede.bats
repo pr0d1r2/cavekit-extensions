@@ -81,6 +81,17 @@ teardown() { rm -rf "$TMP"; }
   assert_output --partial "cross-kind"
 }
 
+@test "refuses re-supersession by different winner (V2 idempotent)" {
+  bash "$SCRIPT" V3 V1 "$SPEC"
+  run bash "$SCRIPT" V4 V1 "$SPEC"
+  assert_failure
+  assert_output --partial "already superseded"
+  # original tag unchanged
+  run grep '^- V1: ' "$SPEC"
+  assert_output --partial "[superseded by V3]"
+  refute_output --partial "[superseded by V4]"
+}
+
 @test "refuses unknown winner id (V2)" {
   run bash "$SCRIPT" V99 V1 "$SPEC"
   assert_failure
