@@ -103,11 +103,11 @@ No supersession candidates found in §V.
 2. **Intra-kind only** — V supersedes V (never T, B, C, I).
 3. **Skip already-tagged** — ignore `[superseded by ...]` lines.
 4. **Cite evidence** — every proposal quotes the actual §V prose
-   that supports the finding. Never fabricate quotes.
+    that supports the finding. Never fabricate quotes.
 5. **Prefer lower tier** when uncertain (MED over false HIGH,
-   LOW over false MED).
+    LOW over false MED).
 6. **Valid mode-A syntax** — every emitted `ck-supersede.sh`
-   command must be a valid mode-A invocation:
-   `ck-supersede.sh [--link] <winner> <loser>...`
+    command must be a valid mode-A invocation:
+    `ck-supersede.sh [--link] <winner> <loser>...`
 7. The `--link` flag is optional; include it only when the
-   winner's prose does not already reference the loser.
+    winner's prose does not already reference the loser.
