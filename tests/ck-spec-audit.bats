@@ -88,6 +88,13 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
+@test "pre-existing staged paths cannot leak into an audit commit" {
+  run grep -F 'git diff --cached --name-only' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'If any path is staged, stop' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
 @test "repository hooks are never bypassed" {
   run grep -F 'Never use `--no-verify`' "$SKILL"
   [ "$status" -eq 0 ]

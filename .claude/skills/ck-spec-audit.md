@@ -22,7 +22,10 @@ Before proposing or writing:
 2. Inspect `git status --short -- SPEC.md`.
 3. If `SPEC.md` has pre-existing staged or unstaged changes, stop and ask the
     author how to handle them. Never absorb, overwrite, reset, or commit them.
-4. Follow the upstream spec flow through its proposed diff and obtain the
+4. Inspect the complete staged-path list with `git diff --cached --name-only`.
+    If any path is staged, stop and ask the author to clear or commit it before
+    continuing. Otherwise a later `git commit` could absorb unrelated work.
+5. Follow the upstream spec flow through its proposed diff and obtain the
     author's normal content approval.
 
 If there is no Git repository, explain that audit commits are unavailable and
