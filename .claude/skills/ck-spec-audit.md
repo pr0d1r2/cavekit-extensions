@@ -21,9 +21,9 @@ Before proposing or writing:
 1. Confirm the working directory is inside a Git repository.
 2. Inspect `git status --short -- SPEC.md`.
 3. If `SPEC.md` has pre-existing staged or unstaged changes, stop and ask the
-   author how to handle them. Never absorb, overwrite, reset, or commit them.
+    author how to handle them. Never absorb, overwrite, reset, or commit them.
 4. Follow the upstream spec flow through its proposed diff and obtain the
-   author's normal content approval.
+    author's normal content approval.
 
 If there is no Git repository, explain that audit commits are unavailable and
 ask whether to apply the approved spec diff without the audit trail. Never
@@ -71,13 +71,13 @@ After decomposition approval:
 
 1. Apply the units in the reviewed order, one at a time.
 2. After each unit, verify its assigned diff and confirm no unrelated path is
-   staged.
+    staged.
 3. Stage only `SPEC.md`.
 4. Commit that unit before applying the next. Never bypass repository hooks.
 5. If a hook fails, fix the failure, show any changed decomposition impact,
-   and retry normally. Never use `--no-verify`.
+    and retry normally. Never use `--no-verify`.
 6. After the final unit, compare `SPEC.md` with the content-approved final
-   result and report the commit hashes in unit order.
+    result and report the commit hashes in unit order.
 
 Use this exact message shape:
 
