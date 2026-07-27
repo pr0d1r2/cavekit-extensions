@@ -40,9 +40,10 @@ losing history.
   skills, DERIVED from the tree so a new script/skill needs no edit here); `version`/`manifest` report the repo-declared `formatVersion`
   that rides the `nix-cavekit → set-and-setting → leaves` lock-bump propagation; `check` verifies the tree is assemblable (marker +
   every path present, non-empty). `nix-cavekit` PINS + MERGES + versions (C1); this repo only DECLARES what merges. See V6, C1.
-- I.ck-spec-audit: default-on `ck:spec` authoring skill — after content approval, the skill classifies the diff full/light/none,
-  never from a user-selected tier. Full: review coherent decision units + exact hunks/IDs/WHY, then commit each separately.
-  Light: one §V/§I/§T decision, one WHY commit. None: meaning-preserving edit, no audit commit required. See V8, C8.
+- I.ck-spec-audit: default-on `ck:spec` authoring skill — resolve committed `.cavekit.toml` `[spec] audit` (missing = true;
+  only committed false disables), then after content approval classify the diff full/light/none. Per-command `--audit` only
+  escalates to full; no per-command disable exists. Full: review coherent decision units + exact hunks/IDs/WHY, then commit each
+  separately. Light: one §V/§I/§T decision, one WHY commit. None: meaning-preserving edit, no audit commit required. See V8, C8.
 
 ## §V INVARIANTS
 
@@ -65,7 +66,9 @@ losing history.
   addition = full (independently revisitable units, every line assigned once, author reviews split, structured WHY commit per unit).
   One substantive decision confined to §V/§I/§T = light (one commit + WHY paragraph).
   Renumber/format/typo/meaning-preserving = none (optional one-line note). Other substantive changes fall back to full.
-  Mixed or ambiguous diffs take the higher tier. Only `SPEC.md` staged for audit commits; hooks ! run.
+  Mixed or ambiguous diffs take the higher tier. `--audit` may force full but no invocation may lower or disable ceremony. Only a
+  committed `.cavekit.toml` `[spec] audit = false` disables it; missing/uncommitted settings stay on, making the disabling commit
+  the final attributable trail entry. Only `SPEC.md` staged for audit commits; hooks ! run.
 
 ## §T TASKS
 
