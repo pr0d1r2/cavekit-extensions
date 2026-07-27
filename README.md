@@ -17,5 +17,8 @@ loop drives the pending §T.
 - `ck-assemble.sh` — deterministic assembly manifest: lists the portable
   content `nix-cavekit` merges into the plugin derivation and reports the
   `formatVersion` that rides the set-and-setting lock-bump (T7/V6/C1).
+- `.claude/skills/ck-spec-audit.md` — default-on `ck:spec` audit-mode:
+  author-reviewed decision-unit decomposition + one WHY-bearing commit per
+  unit (T8/V8).
 - `.claude/skills/ck-supersede-propose.md` — LLM proposer skill for
   §V supersession analysis (T4/V3).
