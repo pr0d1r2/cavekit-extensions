@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# Coverage for ck:spec audit-mode — decision-unit review + reasoned commits.
+# Coverage for ck:spec audit-mode — skill-judged proportional ceremony.
 
 setup() {
   REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
@@ -15,8 +15,69 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
+@test "skill judges weight from approved diff instead of a user flag" {
+  run grep -i 'skill judges that weight from the approved diff' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'author never selects' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'or declares a change trivial' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F '`--no-audit`' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'cannot lower the tier warranted by the diff' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "classification happens after content approval and before mutation" {
+  run grep -i 'After content approval and before mutating' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "full ceremony covers substantive G C and multi-decision changes" {
+  run grep -E 'New or substantively changed §G/§C.*multiple independent substantive decisions.*full' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'one reasoned commit per unit' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "light ceremony covers one substantive decision confined to V I or T" {
+  run grep -E 'Exactly one substantive decision confined to §V, §I, or §T.*light' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'do not manufacture a' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'multi-unit decomposition' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'WHY:' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "classification covers edits removals and future substantive sections" {
+  run grep -i 'whether it adds, edits, or removes text' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'full-tier fallback' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'future spec section' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "none ceremony covers meaning-preserving edits" {
+  run grep -E 'Renumbering, formatting, typo correction.*none' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'without an audit commit or decomposition' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "mixed and ambiguous changes cannot under-classify ceremony" {
+  run grep -F 'full > light > none' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'unclear whether an edit preserves meaning, choose the higher tier' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
 @test "decomposition defines independently revisitable decision units" {
-  run grep -i 'decision the author may want to revisit independently' "$SKILL"
+  run grep -i 'decision the author' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'may want to revisit independently' "$SKILL"
   [ "$status" -eq 0 ]
 }
 
@@ -77,7 +138,7 @@ setup() {
 @test "audit commits stage only SPEC.md" {
   run grep -i 'Stage only `SPEC.md`' "$SKILL"
   [ "$status" -eq 0 ]
-  run grep -i 'Never stage or commit files other than `SPEC.md`' "$SKILL"
+  run grep -i 'never stage or commit files other than `SPEC.md`' "$SKILL"
   [ "$status" -eq 0 ]
 }
 
@@ -101,7 +162,7 @@ setup() {
 }
 
 @test "partial failure preserves successful audit commits" {
-  run grep -i 'successful unit commit is durable' "$SKILL"
+  run grep -i 'unit commit is durable' "$SKILL"
   [ "$status" -eq 0 ]
   run grep -i 'already-created commit hashes' "$SKILL"
   [ "$status" -eq 0 ]

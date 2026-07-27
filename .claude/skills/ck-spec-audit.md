@@ -1,7 +1,7 @@
 ---
 description: >-
-  ck:spec audit-mode — decompose approved SPEC.md writes into independently
-  revisitable decision units and commit each with its WHY
+  ck:spec audit-mode — judge an approved SPEC.md change's weight, then apply
+  full, light, or no audit ceremony proportionally
 ---
 
 # ck:spec audit-mode
@@ -12,7 +12,9 @@ it does not replace its dispatch, section ownership, numbering, or caveman
 rules.
 
 The spec entry preserves the compact **what**. The commit bonded to that exact
-diff preserves the rich **why**.
+diff preserves the rich **why** when the change carries a substantive decision.
+The skill judges that weight from the approved diff; the author never selects
+an audit tier or declares a change trivial.
 
 ## Preconditions
 
@@ -22,20 +24,52 @@ Before proposing or writing:
 2. Inspect `git status --short -- SPEC.md`.
 3. If `SPEC.md` has pre-existing staged or unstaged changes, stop and ask the
     author how to handle them. Never absorb, overwrite, reset, or commit them.
-4. Inspect the complete staged-path list with `git diff --cached --name-only`.
-    If any path is staged, stop and ask the author to clear or commit it before
-    continuing. Otherwise a later `git commit` could absorb unrelated work.
-5. Follow the upstream spec flow through its proposed diff and obtain the
+4. Follow the upstream spec flow through its proposed diff and obtain the
     author's normal content approval.
 
 If there is no Git repository, explain that audit commits are unavailable and
 ask whether to apply the approved spec diff without the audit trail. Never
 silently downgrade.
 
-## Decision units
+## Judge change weight
 
-After content approval, partition the approved diff by rationale. One unit is
-a decision the author may want to revisit independently:
+After content approval and before mutating `SPEC.md`, inspect the complete
+approved diff and assign exactly one ceremony tier:
+
+| Skill-detected change | Tier | Ceremony |
+| --- | --- | --- |
+| New or substantively changed §G/§C; multiple independent substantive decisions; or a substantive change not covered by light | full | Reviewed decision-unit decomposition; one reasoned commit per unit |
+| Exactly one substantive decision confined to §V, §I, or §T | light | One commit with a WHY paragraph |
+| Renumbering, formatting, typo correction, or another meaning-preserving edit | none | No audit commit required; optionally report one line |
+
+A substantive edit changes policy, behavior, guarantees, interfaces, or work
+scope, whether it adds, edits, or removes text. A trivial edit preserves meaning
+and introduces no choice that may need to be revisited. Adding supporting
+§I/§V/§T entries for one new or changed §C remains full; count the underlying
+decisions, not files, sections, hunks, or line count. The full-tier fallback
+keeps every substantive diff classified even when a future spec section is not
+named in this table.
+
+For a mixed diff, choose the highest tier present: full > light > none. When it
+is genuinely unclear whether an edit preserves meaning, choose the higher tier.
+Briefly state the detected tier and the evidence in the diff. This is a skill
+judgment, not a prompt for the author to choose a tier.
+
+Do not accept `--audit-mode`, `--no-audit`, `--trivial`, or equivalent
+user-controlled ceremony flags. An author's description can explain intent,
+but cannot lower the tier warranted by the diff. If the proposed or applied
+diff reveals additional decisions, reclassify it before mutation or before
+committing; obtain any newly required review rather than silently continuing.
+
+For full or light ceremony, inspect the complete staged-path list with
+`git diff --cached --name-only`. If any path is staged, stop and ask the author
+to clear or commit it before continuing. Otherwise a later `git commit` could
+absorb unrelated work.
+
+## Full ceremony: decision units
+
+Partition the approved diff by rationale. One unit is a decision the author
+may want to revisit independently:
 
 - one §C choice plus its supporting §I, §V, and §T entries;
 - one §V cluster whose entries share a single rationale;
@@ -50,7 +84,7 @@ collapse multiple independent choices into one mega-unit.
 Every changed `SPEC.md` line must belong to exactly one unit. Preserve the
 approved final file content, section order, and monotonic IDs.
 
-## Decomposition review gate
+### Decomposition review gate
 
 Before mutating `SPEC.md` or creating any commit, show the proposed units in
 commit order. For every unit show:
@@ -68,7 +102,7 @@ Ask the author to approve or revise the decomposition. **Do not write or
 commit until the author explicitly approves this split.** Content approval
 alone is not decomposition approval.
 
-## Apply and commit
+### Apply and commit
 
 After decomposition approval:
 
@@ -96,12 +130,40 @@ The subject describes the decision, not the editing action. The body must name
 an alternative and why it lost; do not merely restate the diff. If there is no
 meaningful supersession or accepted risk, say so explicitly.
 
+## Light ceremony: one WHY commit
+
+For exactly one substantive decision whose changes are confined to §V, §I, or
+§T, do not manufacture a multi-unit decomposition or request a separate
+decomposition approval. Apply the content-approved diff as one change, verify
+it matches the approved result, stage only `SPEC.md`, and create one commit
+without bypassing hooks.
+
+Use this message shape:
+
+```text
+spec: <one-line decision> (<ids>)
+
+WHY:
+<one paragraph explaining the problem, the choice, and the material tradeoff>
+```
+
+The WHY paragraph must explain the rationale, not merely restate the diff. A
+formal rejected-alternative inventory is optional at light weight.
+
+## No ceremony: meaning-preserving edits
+
+For renumbering, formatting, typo correction, or another meaning-preserving
+edit, apply the content-approved diff without an audit commit or decomposition
+review. Verify that the result is still meaning-preserving and optionally
+report a one-line note such as `Audit: none — typo-only change.` Do not create
+a hollow WHY record merely to satisfy the workflow.
+
 ## Failure safety
 
-- A successful unit commit is durable; never rewrite or squash it
+- A successful full-ceremony unit commit is durable; never rewrite or squash it
   automatically if a later unit fails.
 - On failure, stop with already-created commit hashes, the failing unit, hook
   output, and remaining approved units.
-- Never stage or commit files other than `SPEC.md`.
+- In full or light ceremony, never stage or commit files other than `SPEC.md`.
 - Never amend, rebase, reset, or force-push as part of audit-mode.
 - An empty unit is an error: return it to decomposition review.
