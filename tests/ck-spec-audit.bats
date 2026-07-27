@@ -15,6 +15,54 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
+@test "missing project setting defaults audit on" {
+  run grep -F 'no committed `.cavekit.toml`, no `[spec]` table, or no `audit` key means' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F '`audit = true`' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "only committed project setting can disable audit" {
+  run grep -F 'only a committed `[spec]` table with `audit = false` means disabled' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F '`git show HEAD:.cavekit.toml`' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'An untracked, unstaged, or staged' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'must not disable audit-mode' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "malformed audit setting fails closed" {
+  run grep -F 'malformed or non-boolean' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'never interpret it as disabled' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "per-command audit can only escalate to full ceremony" {
+  run grep -F 'only per-command control is `--audit`' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'escalates to full ceremony' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'it can never lower it' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "per-command audit disable is rejected" {
+  run grep -F 'reject `--no-audit` and every equivalent flag' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "committed disable uses normal upstream flow without audit commits" {
+  run grep -F 'Audit: disabled by committed .cavekit.toml' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'without audit classification, decomposition,' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -F 'or audit commits' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
 @test "skill judges weight from approved diff instead of a user flag" {
   run grep -i 'skill judges that weight from the approved diff' "$SKILL"
   [ "$status" -eq 0 ]
