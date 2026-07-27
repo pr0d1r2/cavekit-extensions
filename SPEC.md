@@ -19,6 +19,7 @@ losing history.
 - C5: **lossless** — supersedes upstream's ">500 lines, compact §B drop oldest": same trigger + `/spec` diff discipline, but rows MOVE to a file, ⊥ `/dev/null`. The LIVE spec stays one file (upstream's "⊥ more files" holds — archive is cold).
 - C6: **incubate → extract → graduate** — born in hallucinogen `contrib/`, extracted to this repo, graduated by upstream PR (dropped here once merged).
 - C7: **§T are SELF-CONTAINED** (in-repo, loop-drivable); plugin/upstream-integration tasks (touch the installed cavekit plugin, ⊥ this repo) are flagged **out-of-loop** (graduation, human PR).
+- C8: **decision audit-trail bonded to diff** — every `ck:spec` mutation defaults to author-reviewed decision-unit commits; rich WHY lives in commit messages, ⊥ separate ADR files.
 
 ## §I INTERFACES
 
@@ -36,6 +37,8 @@ losing history.
   skills, DERIVED from the tree so a new script/skill needs no edit here); `version`/`manifest` report the repo-declared `formatVersion`
   that rides the `nix-cavekit → set-and-setting → leaves` lock-bump propagation; `check` verifies the tree is assemblable (marker +
   every path present, non-empty). `nix-cavekit` PINS + MERGES + versions (C1); this repo only DECLARES what merges. See V6, C1.
+- I.ck-spec-audit: default-on `ck:spec` authoring skill — after content approval, propose coherent decision units + exact assigned
+  hunks/IDs/WHY; author approves split before mutation; apply + commit each unit separately using structured decision-record message. See V8, C8.
 
 ## §V INVARIANTS
 
@@ -54,6 +57,9 @@ losing history.
 - V6: format-version is DECOUPLED from plugin/tooling version (C2) — a repo declares `formatVersion`; migrators (`apps.migrate`, deterministic, idempotent, confirmator-gated)
   bridge vN→vN+1; the plugin reads ≥ v1 (offers migrate), writes current. Propagation rides `nix-cavekit → set-and-setting → leaves` (a lock-bump, ⊥ O(N) copies).
 - V7: the nix↔LLM seam (C3) — nix owns package/version/**migrate**/validate (pure, reproducible); LLM owns AUTHORING (`/spec`, mode-B propose). Mechanical verbs (`ck-archive`, `ck-supersede` mode A) are deterministic scripts; proposers/authors are skills. A change to one ⊥ leaks into the other.
+- V8: `ck:spec` audit-mode — one independently revisitable decision unit per commit (one §C + supporting §I/§V/§T, or §V cluster
+  sharing one rationale); every changed line assigned exactly once; author reviews decomposition before writes/commits; message ! contain
+  decision + IDs + WHY (problem · choice · rejected alternative/why · tradeoff/risk/supersession). Only `SPEC.md` staged; hooks ! run.
 
 ## §T TASKS
 
@@ -66,6 +72,7 @@ losing history.
 | T5 | x | **format-version primitive** — `lib.formatVersion` + a repo-declared `formatVersion` marker; the plugin/format axis split. | V6,I.format-version |
 | T6 | x | (OUT-OF-LOOP — graduation/upstream PR, edits the cavekit plugin) **`/check` skip-superseded** — `/check` stops enforcing a `[superseded by VN]`-tagged §V. | V4,I.check-skip |
 | T7 | x | (OUT-OF-LOOP — cross-repo) **nix-cavekit assembly** — `nix-cavekit` pins this repo + merges its content into the plugin derivation; propagate via set-and-setting lock-bump. | V6,C1 |
+| T8 | x | **`ck:spec` audit-mode skill** — default-on decision-unit decomposition; author reviews split; one structured WHY commit per unit; dirty-spec + hook-failure safety. + bats. | V8,C8,I.ck-spec-audit |
 
 ## §B BUGS
 
