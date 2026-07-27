@@ -7,20 +7,50 @@ description: >-
 # ck:spec audit-mode
 
 Apply this workflow to every `ck:spec` mutation of `SPEC.md`. Audit-mode is
-default-on. It extends the upstream spec skill's diff-and-approval contract;
-it does not replace its dispatch, section ownership, numbering, or caveman
-rules.
+default-on through the project setting described below. It extends the upstream
+spec skill's diff-and-approval contract; it does not replace its dispatch,
+section ownership, numbering, or caveman rules.
 
 The spec entry preserves the compact **what**. The commit bonded to that exact
 diff preserves the rich **why** when the change carries a substantive decision.
 The skill judges that weight from the approved diff; the author never selects
 an audit tier or declares a change trivial.
 
+## Resolve the project setting
+
+At the start of every invocation, find the repository root with
+`git rev-parse --show-toplevel` and resolve audit-mode from the committed
+`.cavekit.toml` at `HEAD`:
+
+- no committed `.cavekit.toml`, no `[spec]` table, or no `audit` key means
+  `audit = true`;
+- a committed `[spec]` table with `audit = true` also means enabled;
+- only a committed `[spec]` table with `audit = false` means disabled.
+
+Read the committed blob (for example with `git show HEAD:.cavekit.toml`), not
+the working-tree or index copy. An untracked, unstaged, or staged
+`audit = false` must not disable audit-mode. This makes the commit that turns
+the setting off visible and attributable in Git history before subsequent
+`ck:spec` writes stop producing audit commits. A malformed or non-boolean
+`spec.audit` value is an error; never interpret it as disabled.
+
+The only per-command control is `--audit`, which escalates to full ceremony
+regardless of the detected weight or committed project setting. It is useful
+for a small diff whose decision weight warrants the full review. There is no
+per-invocation disable: reject `--no-audit` and every equivalent flag.
+
+When the committed setting is false and `--audit` is absent, report
+`Audit: disabled by committed .cavekit.toml` and continue with the upstream
+content-approval and mutation flow without audit classification, decomposition,
+or audit commits. Do not treat a prompt, environment variable, alias, or
+working-tree config edit as authority to disable it.
+
 ## Preconditions
 
 Before proposing or writing:
 
-1. Confirm the working directory is inside a Git repository.
+1. Confirm the working directory is inside a Git repository and resolve the
+    committed project setting.
 2. Inspect `git status --short -- SPEC.md`.
 3. If `SPEC.md` has pre-existing staged or unstaged changes, stop and ask the
     author how to handle them. Never absorb, overwrite, reset, or commit them.
@@ -34,7 +64,8 @@ silently downgrade.
 ## Judge change weight
 
 After content approval and before mutating `SPEC.md`, inspect the complete
-approved diff and assign exactly one ceremony tier:
+approved diff and assign exactly one ceremony tier. If `--audit` was supplied,
+assign full; otherwise classify by weight:
 
 | Skill-detected change | Tier | Ceremony |
 | --- | --- | --- |
@@ -56,10 +87,11 @@ Briefly state the detected tier and the evidence in the diff. This is a skill
 judgment, not a prompt for the author to choose a tier.
 
 Do not accept `--audit-mode`, `--no-audit`, `--trivial`, or equivalent
-user-controlled ceremony flags. An author's description can explain intent,
-but cannot lower the tier warranted by the diff. If the proposed or applied
-diff reveals additional decisions, reclassify it before mutation or before
-committing; obtain any newly required review rather than silently continuing.
+user-controlled de-escalation flags. An author's description can explain
+intent, but cannot lower the tier warranted by the diff. `--audit` may raise
+the tier to full; it can never lower it. If the proposed or applied diff reveals
+additional decisions, reclassify it before mutation or before committing;
+obtain any newly required review rather than silently continuing.
 
 For full or light ceremony, inspect the complete staged-path list with
 `git diff --cached --name-only`. If any path is staged, stop and ask the author

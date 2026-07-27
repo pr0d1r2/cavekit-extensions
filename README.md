@@ -21,6 +21,8 @@ loop drives the pending §T.
   skill-judged proportional ceremony — full decision-unit commits for heavy
   changes (including any substantive goal or constraint change), one WHY commit
   for a single substantive §V/§I/§T decision, and none for meaning-preserving
-  edits (T8/V8).
+  edits. Per-command `--audit` can force full ceremony; only a committed
+  `.cavekit.toml` `[spec] audit = false` can disable the audit trail
+  (T8/V8).
 - `.claude/skills/ck-supersede-propose.md` — LLM proposer skill for
   §V supersession analysis (T4/V3).
