@@ -33,21 +33,30 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
-@test "full ceremony covers new C and multi-decision additions" {
-  run grep -E 'New §C.*multiple independent decisions.*full' "$SKILL"
+@test "full ceremony covers substantive G C and multi-decision changes" {
+  run grep -E 'New or substantively changed §G/§C.*multiple independent substantive decisions.*full' "$SKILL"
   [ "$status" -eq 0 ]
   run grep -i 'one reasoned commit per unit' "$SKILL"
   [ "$status" -eq 0 ]
 }
 
-@test "light ceremony covers one substantive V I or T decision" {
-  run grep -E 'One substantive §V, §I, or §T decision.*light' "$SKILL"
+@test "light ceremony covers one substantive decision confined to V I or T" {
+  run grep -E 'Exactly one substantive decision confined to §V, §I, or §T.*light' "$SKILL"
   [ "$status" -eq 0 ]
   run grep -i 'do not manufacture a' "$SKILL"
   [ "$status" -eq 0 ]
   run grep -i 'multi-unit decomposition' "$SKILL"
   [ "$status" -eq 0 ]
   run grep -F 'WHY:' "$SKILL"
+  [ "$status" -eq 0 ]
+}
+
+@test "classification covers edits removals and future substantive sections" {
+  run grep -i 'whether it adds, edits, or removes text' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'full-tier fallback' "$SKILL"
+  [ "$status" -eq 0 ]
+  run grep -i 'future spec section' "$SKILL"
   [ "$status" -eq 0 ]
 }
 

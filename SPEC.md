@@ -20,7 +20,8 @@ losing history.
 - C6: **incubate → extract → graduate** — born in hallucinogen `contrib/`, extracted to this repo, graduated by upstream PR (dropped here once merged).
 - C7: **§T are SELF-CONTAINED** (in-repo, loop-drivable); plugin/upstream-integration tasks (touch the installed cavekit plugin, ⊥ this repo) are flagged **out-of-loop** (graduation, human PR).
 - C8: **decision audit-trail bonded to diff, proportional to weight** — the `ck:spec` skill judges the approved diff, ⊥ a user flag:
-  new §C/multi-decision = reviewed decision-unit commits; one substantive §V/§I/§T = one WHY commit; meaning-preserving = none.
+  substantive §G/§C, multi-decision, or otherwise-unclassified substantive = reviewed decision-unit commits;
+  one substantive decision confined to §V/§I/§T = one WHY commit; meaning-preserving = none.
   Rich WHY lives in commit messages, ⊥ separate ADR files.
 
 ## §I INTERFACES
@@ -62,7 +63,8 @@ losing history.
 - V7: the nix↔LLM seam (C3) — nix owns package/version/**migrate**/validate (pure, reproducible); LLM owns AUTHORING (`/spec`, mode-B propose). Mechanical verbs (`ck-archive`, `ck-supersede` mode A) are deterministic scripts; proposers/authors are skills. A change to one ⊥ leaks into the other.
 - V8: `ck:spec` audit-mode is auto-proportional from skill-detected change weight, never a user declaration. New §C or multi-decision
   addition = full (independently revisitable units, every line assigned once, author reviews split, structured WHY commit per unit).
-  One substantive §V/§I/§T = light (one commit + WHY paragraph). Renumber/format/typo/meaning-preserving = none (optional one-line note).
+  One substantive decision confined to §V/§I/§T = light (one commit + WHY paragraph).
+  Renumber/format/typo/meaning-preserving = none (optional one-line note). Other substantive changes fall back to full.
   Mixed or ambiguous diffs take the higher tier. Only `SPEC.md` staged for audit commits; hooks ! run.
 
 ## §T TASKS

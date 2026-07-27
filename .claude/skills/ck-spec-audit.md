@@ -38,14 +38,17 @@ approved diff and assign exactly one ceremony tier:
 
 | Skill-detected change | Tier | Ceremony |
 | --- | --- | --- |
-| New §C, or an addition containing multiple independent decisions | full | Reviewed decision-unit decomposition; one reasoned commit per unit |
-| One substantive §V, §I, or §T decision | light | One commit with a WHY paragraph |
+| New or substantively changed §G/§C; multiple independent substantive decisions; or a substantive change not covered by light | full | Reviewed decision-unit decomposition; one reasoned commit per unit |
+| Exactly one substantive decision confined to §V, §I, or §T | light | One commit with a WHY paragraph |
 | Renumbering, formatting, typo correction, or another meaning-preserving edit | none | No audit commit required; optionally report one line |
 
 A substantive edit changes policy, behavior, guarantees, interfaces, or work
-scope. A trivial edit preserves meaning and introduces no choice that may need
-to be revisited. Adding supporting §I/§V/§T entries for one new §C remains full;
-count the underlying decisions, not files, sections, hunks, or line count.
+scope, whether it adds, edits, or removes text. A trivial edit preserves meaning
+and introduces no choice that may need to be revisited. Adding supporting
+§I/§V/§T entries for one new or changed §C remains full; count the underlying
+decisions, not files, sections, hunks, or line count. The full-tier fallback
+keeps every substantive diff classified even when a future spec section is not
+named in this table.
 
 For a mixed diff, choose the highest tier present: full > light > none. When it
 is genuinely unclear whether an edit preserves meaning, choose the higher tier.
@@ -129,10 +132,11 @@ meaningful supersession or accepted risk, say so explicitly.
 
 ## Light ceremony: one WHY commit
 
-For exactly one substantive §V, §I, or §T decision, do not manufacture a
-multi-unit decomposition or request a separate decomposition approval. Apply
-the content-approved diff as one change, verify it matches the approved result,
-stage only `SPEC.md`, and create one commit without bypassing hooks.
+For exactly one substantive decision whose changes are confined to §V, §I, or
+§T, do not manufacture a multi-unit decomposition or request a separate
+decomposition approval. Apply the content-approved diff as one change, verify
+it matches the approved result, stage only `SPEC.md`, and create one commit
+without bypassing hooks.
 
 Use this message shape:
 
