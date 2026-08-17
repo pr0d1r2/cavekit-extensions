@@ -38,14 +38,20 @@
         actionlint = set-and-setting.lib.mkLefthookCheck {
           inherit pkgs;
           name = "actionlint";
-          wrapper = builtins.elemAt
-            (set-and-setting.lib.materializationFor {
-              inherit pkgs;
-              fragments = [ "actions" ];
-            }).packages
-            0;
-          src = nixpkgs.lib.sources.sourceByRegex ./. [ "^\\.github/workflows/.*" ];
-          suffices = [ ".yml" ".yaml" ];
+          wrapper =
+            builtins.elemAt
+              (set-and-setting.lib.materializationFor {
+                inherit pkgs;
+                fragments = [ "actions" ];
+              }).packages
+              0;
+          src = nixpkgs.lib.sources.sourceByRegex ./. [
+            "^\\.github/workflows/.*"
+          ];
+          suffices = [
+            ".yml"
+            ".yaml"
+          ];
         };
       };
     };
