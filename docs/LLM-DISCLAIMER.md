@@ -52,24 +52,24 @@ Those entries are worth more than a green badge. A gate is a claim about what
 it catches, and the only honest way to describe one is alongside what it
 missed.
 
-## The guardrails are this repository's own
+## The guardrails are the repository's CI gate
 
-This repository is gated by `lefthook.yml`. Before a machine-authored branch is
-pushed, it is run against that gate: the same checks a human gets on
-`git commit`, in the same environment continuous integration uses. A change the
-gate refuses is not pushed and no pull request is opened for it.
+This repository's pull requests are gated by the reusable workflow referenced
+from `.github/workflows/ci.yml`. That workflow supplies the repository's
+checks; there is no checked-in `lefthook.yml` or local pre-commit command to
+run here. A change the gate refuses is not pushed and no pull request is
+opened for it.
 
-Run it yourself:
+Inspect the gate definition here:
 
 ```sh
-lefthook run pre-commit --all-files
+sed -n '1,120p' .github/workflows/ci.yml
 ```
 
-That property is recent rather than original, which is the honest way to put
-it: the loop's agent worked for a long time in a sandbox where these hooks were
-never installed, so continuous integration was the first thing to see a change,
-and defects a local hook names in a fraction of a second cost a push and a full
-CI round each.
+The workflow is the authoritative check for this repository; its reusable
+workflow implementation lives in `pr0d1r2/set-and-setting`. Its checks can be
+run from the pull request's Checks tab; this repository does not expose a
+local command that reproduces the reusable workflow.
 
 ## What a reader should actually check
 
