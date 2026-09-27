@@ -1,5 +1,11 @@
 # cavekit-extensions
 
+<!-- hallucinogen:autonomy-disclaimer start -->
+> Read [LLM-DISCLAIMER](docs/LLM-DISCLAIMER.md) first. This repository is
+> tended by an autonomous loop, and that file says what the loop may do here,
+> what it may not, and what to check before trusting anything in this tree.
+<!-- hallucinogen:autonomy-disclaimer end -->
+
 pr0d1r2's cavekit format + tooling extensions — spec compaction (`ck:archive`),
 supersession (`ck:supersede`), and archival — layered on upstream
 [cavekit](https://github.com/JuliusBrussee/cavekit), packaged and propagated by
