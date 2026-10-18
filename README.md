@@ -6,6 +6,8 @@
 > what it may not, and what to check before trusting anything in this tree.
 <!-- hallucinogen:autonomy-disclaimer end -->
 
+[![CI](https://github.com/pr0d1r2/cavekit-extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/cavekit-extensions/actions/workflows/ci.yml) [![NixOS 26.05](https://img.shields.io/badge/NixOS-26.05-blue.svg?logo=nixos)](https://nixos.org)
+
 pr0d1r2's cavekit format + tooling extensions — spec compaction (`ck:archive`),
 supersession (`ck:supersede`), and archival — layered on upstream
 [cavekit](https://github.com/JuliusBrussee/cavekit), packaged and propagated by
@@ -32,3 +34,28 @@ loop drives the pending §T.
   (T8/V8).
 - `.claude/skills/ck-supersede-propose.md` — LLM proposer skill for
   §V supersession analysis (T4/V3).
+
+## Architecture
+
+```mermaid
+flowchart LR
+  spec["a consumer's SPEC.md"] -->|"ck-archive.sh"| archived["archived.md"]
+  archived -->|"ck-archive-shard.sh"| shards["archived/YYYY-MM.md + INDEX.md"]
+  spec -->|"ck-supersede.sh"| tags["superseded-by tags on §V"]
+  spec -->|"ck-check-skip.sh"| skip["active / skipped §V ids for /check"]
+  spec -->|"ck-format-version.sh"| fv["formatVersion marker"]
+  repo["this repository"] -->|"ck-assemble.sh manifest"| nixck["nix-cavekit"]
+  nixck -->|"merged into the plugin derivation"| cavekit["upstream cavekit"]
+```
+
+## Development architecture
+
+```mermaid
+flowchart LR
+  flake["flake.nix"] -->|"mkConsumerFlake"| sas["set-and-setting"]
+  flake -->|"devShell"| shell["dev shell"]
+  lh["lefthook.yml"] -->|"pre-commit / pre-push"| checks["linters, bats, nix flake check"]
+  shell --> lh
+  tests["tests/*.bats"] --> checks
+  ci[".github/workflows/ci.yml"] -->|"guardrails.yml"| checks
+```
